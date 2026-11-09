@@ -28,6 +28,8 @@
         <button class="btn-logout" @click="handleLogout">退出登录</button>
       </div>
 
+      <!-- ===== 工作台页面 ===== -->
+      <template v-if="activeNav === 'home'">
       <div class="banner">
         <h3>{{ greeting }}，{{ userStore.userName }}</h3>
         <p>欢迎使用注册人员信息查询系统</p>
@@ -131,9 +133,12 @@
           <button class="page-btn" :disabled="query.pageNum >= pagination.pages" @click="loadData(query.pageNum + 1)">›</button>
         </div>
       </div>
+      </template>
 
-      <!-- 文字导出 Excel 功能 -->
+      <!-- ===== 文字导出页面（独立菜单页，不与工作台共存） ===== -->
+      <template v-if="activeNav === 'queue'">
       <TextQueueExport ref="queueFeatureRef" />
+      </template>
     </main>
   </div>
 </template>
@@ -154,12 +159,10 @@ const activeNav = ref('home')
 
 function goQueue() {
   activeNav.value = 'queue'
-  queueFeatureRef.value?.$el?.scrollIntoView({ behavior: 'smooth', block: 'start' })
 }
 
 function goHome() {
   activeNav.value = 'home'
-  document.querySelector('.menu-main')?.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
 const summary = ref({})
