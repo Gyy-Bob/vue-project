@@ -14,6 +14,8 @@ export default defineConfig({
   },
   server: {
     port: 5173,
+    // 允许内网穿透隧道域名访问（trycloudflare.com 的随机子域名）
+    allowedHosts: ['.trycloudflare.com'],
     proxy: {
       // 前端请求 /api/v1/** → 转发到后端服务
       '/api': {
