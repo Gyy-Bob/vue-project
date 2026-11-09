@@ -2,8 +2,9 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { fileURLToPath, URL } from 'node:url'
 
-// 后端 gyy-user-service 运行在 8101 端口
-const BACKEND_TARGET = 'http://localhost:8101'
+// 前端统一走 8080 网关（JWT 鉴权在网关层），由网关路由到 8101 等业务服务
+// 注意：不要直连 8101，否则会绕过网关的 JWT 校验
+const BACKEND_TARGET = 'http://localhost:8080'
 
 export default defineConfig({
   plugins: [vue()],
