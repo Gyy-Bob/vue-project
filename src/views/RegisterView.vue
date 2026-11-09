@@ -1,16 +1,16 @@
 <template>
   <div class="auth-page">
-    <!-- 左侧品牌区（设计稿第 2 页左屏） -->
-    <div class="auth-brand">
+    <!-- 左侧品牌区（设计稿第 2 页左屏 · 原始背景图） -->
+    <div class="auth-brand" :style="{ backgroundImage: `url(${bgRegister})` }">
       <div class="logo">
         <span class="logo-mark"></span>
-        <span>AURORA · 云启科技</span>
+        <span>AURORA · 涌原科技</span>
       </div>
       <div class="slogan">
         <h1>从这里开始<br />共赴每一场成就</h1>
         <p>三分钟即可完成注册，即刻体验更智能的企业管理方式。</p>
       </div>
-      <div class="copyright">© 2026 AURORA 云启科技 · 保留所有权利</div>
+      <div class="copyright">© 2026 AURORA 涌原科技 · 保留所有权利</div>
     </div>
 
     <!-- 右侧注册表单 -->
@@ -93,6 +93,7 @@ import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { register } from '@/api/auth'
 import { toast } from '@/composables/toast'
+import bgRegister from '@/assets/images/auth-bg-register.jpg'
 
 const router = useRouter()
 

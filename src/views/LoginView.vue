@@ -1,16 +1,16 @@
 <template>
   <div class="auth-page">
-    <!-- 左侧品牌区（设计稿第 1 页左屏） -->
-    <div class="auth-brand">
+    <!-- 左侧品牌区（设计稿第 1 页左屏 · 原始背景图） -->
+    <div class="auth-brand" :style="{ backgroundImage: `url(${bgLogin})` }">
       <div class="logo">
         <span class="logo-mark"></span>
-        <span>AURORA · 云启科技</span>
+        <span>AURORA · 涌原科技</span>
       </div>
       <div class="slogan">
         <h1>智启未来<br />高效管理每一刻</h1>
         <p>一站式企业业务管理平台，让协作更简单，让决策更智能。</p>
       </div>
-      <div class="copyright">© 2026 AURORA 云启科技 · 保留所有权利</div>
+      <div class="copyright">© 2026 AURORA 涌原科技 · 保留所有权利</div>
     </div>
 
     <!-- 右侧登录表单 -->
@@ -80,6 +80,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { login } from '@/api/auth'
 import { useUserStore } from '@/stores/user'
 import { toast } from '@/composables/toast'
+import bgLogin from '@/assets/images/auth-bg-login.jpg'
 
 const route = useRoute()
 const router = useRouter()

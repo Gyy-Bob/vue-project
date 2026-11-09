@@ -70,13 +70,21 @@ input, button { font-family: inherit; }
   display: flex;
   flex-direction: column;
   padding: 40px 60px;
-  /* 深蓝夜色渐变 + 金色光波（CSS 还原设计稿左屏） */
-  background:
-    radial-gradient(ellipse 80% 55% at 75% 85%, rgba(217, 168, 96, 0.22), transparent 60%),
-    radial-gradient(ellipse 60% 40% at 60% 60%, rgba(217, 168, 96, 0.12), transparent 65%),
-    radial-gradient(ellipse 90% 70% at 30% 90%, rgba(120, 100, 160, 0.18), transparent 60%),
-    linear-gradient(160deg, #0d1526 0%, #1a2440 45%, #2a2f52 100%);
+  /* 设计稿原始背景图（登录页：山峦金光 / 注册页：星空光带），由页面组件注入 */
+  background-color: var(--bg-deep);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
+/* 轻度压暗保证文字可读性，贴近设计稿观感 */
+.auth-brand::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(13, 21, 38, 0.25) 0%, rgba(13, 21, 38, 0.05) 45%, rgba(13, 21, 38, 0.3) 100%);
+  pointer-events: none;
+}
+.auth-brand > * { position: relative; z-index: 1; }
 .auth-brand .logo {
   display: flex;
   align-items: center;
