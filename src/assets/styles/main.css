@@ -413,6 +413,93 @@ tbody tr:hover { background: rgba(42, 54, 87, 0.5); }
   color: var(--text-muted);
 }
 
+/* ===== 文字导出 Excel 功能 ===== */
+.queue-feature { margin-top: 24px; padding: 22px 24px; }
+.queue-head { margin-bottom: 20px; }
+.queue-head h3 { font-size: 16px; margin-bottom: 6px; }
+.queue-hint { color: var(--text-muted); font-size: 12px; }
+.queue-layout { display: flex; gap: 24px; align-items: stretch; }
+.queue-input-area { flex: 1; display: flex; flex-direction: column; }
+.queue-btn-row { display: flex; gap: 12px; margin-top: 16px; }
+.queue-btn { flex: 0 0 140px; height: 42px; font-size: 14px; letter-spacing: 2px; }
+.btn-export {
+  flex: 1;
+  height: 42px;
+  border: none;
+  border-radius: var(--radius);
+  background: var(--card-bg-hover);
+  border: 1px solid var(--gold);
+  color: var(--gold);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: filter 0.2s, transform 0.1s;
+}
+.btn-export:hover:not(:disabled) { filter: brightness(1.15); }
+.btn-export:active:not(:disabled) { transform: scale(0.985); }
+.btn-export:disabled { opacity: 0.45; cursor: not-allowed; }
+.queue-tip { margin-top: auto; padding-top: 14px; color: var(--text-muted); font-size: 12px; }
+.queue-list {
+  flex: 1.2;
+  max-height: 320px;
+  overflow-y: auto;
+  background: rgba(16, 24, 46, 0.55);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.queue-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--card-bg);
+  border: 1px solid rgba(56, 68, 107, 0.5);
+  border-radius: 8px;
+  padding: 8px 12px;
+}
+.q-index {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--gold);
+  color: #3a2c10;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.q-text {
+  flex: 1;
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.q-edit { flex: 1; height: 34px; padding: 0 12px; }
+.q-btn {
+  flex-shrink: 0;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  border-radius: 6px;
+  padding: 4px 12px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.q-btn:hover { color: var(--gold); border-color: var(--gold); }
+.q-btn.q-del:hover { color: var(--danger); border-color: var(--danger); }
+.q-btn.q-save { color: var(--gold); border-color: var(--gold); }
+.queue-count { text-align: right; color: var(--text-muted); font-size: 12px; padding: 4px 8px 0; }
+@media (max-width: 900px) {
+  .queue-layout { flex-direction: column; }
+}
+
 /* 分页 */
 .pagination {
   display: flex;

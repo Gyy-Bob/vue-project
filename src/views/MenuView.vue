@@ -6,8 +6,10 @@
         <span class="logo-mark"></span>
         <span>AURORA</span>
       </div>
-      <div class="nav-item active">
+      <div class="nav-item" :class="{ active: activeNav === 'home' }" @click="goHome">
         <span class="nav-icon">▦</span> 工作台
+      </div>      <div class="nav-item" :class="{ active: activeNav === 'queue' }" @click="goQueue">
+        <span class="nav-icon">✎</span> 文字导出
       </div>
       <div class="spacer"></div>
       <div class="user-chip">
@@ -129,6 +131,9 @@
           <button class="page-btn" :disabled="query.pageNum >= pagination.pages" @click="loadData(query.pageNum + 1)">›</button>
         </div>
       </div>
+
+      <!-- 文字导出 Excel 功能 -->
+      <TextQueueExport ref="queueFeatureRef" />
     </main>
   </div>
 </template>
@@ -139,9 +144,23 @@ import { useRouter } from 'vue-router'
 import { getReportUsers } from '@/api/auth'
 import { useUserStore } from '@/stores/user'
 import { toast } from '@/composables/toast'
+import TextQueueExport from '@/components/TextQueueExport.vue'
 
 const router = useRouter()
 const userStore = useUserStore()
+
+const queueFeatureRef = ref(null)
+const activeNav = ref('home')
+
+function goQueue() {
+  activeNav.value = 'queue'
+  queueFeatureRef.value?.$el?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
+
+function goHome() {
+  activeNav.value = 'home'
+  document.querySelector('.menu-main')?.scrollTo({ top: 0, behavior: 'smooth' })
+}
 
 const summary = ref({})
 const list = ref([])
