@@ -34,7 +34,7 @@ request.interceptors.response.use(
       router.push({ name: 'login' })
       return Promise.reject({ code, message: message || '未登录或凭证无效' })
     }
-    return Promise.reject({ code, message: message || '操作失败' })
+    return Promise.reject({ code, message: message || '操作失败', data })
   },
   () => Promise.reject({ code: -1, message: '网络异常，请稍后重试' })
 )

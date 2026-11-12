@@ -11,6 +11,9 @@
       </div>      <div class="nav-item" :class="{ active: activeNav === 'queue' }" @click="goQueue">
         <span class="nav-icon">✎</span> 文字导出
       </div>
+      <div class="nav-item" :class="{ active: activeNav === 'ai' }" @click="goAi">
+        <span class="nav-icon">✦</span> AI 开户助手
+      </div>
       <div class="spacer"></div>
       <div class="user-chip">
         <div class="avatar">{{ avatarChar }}</div>
@@ -139,6 +142,11 @@
       <template v-if="activeNav === 'queue'">
       <TextQueueExport ref="queueFeatureRef" />
       </template>
+
+      <!-- ===== AI 开户助手页面 ===== -->
+      <template v-if="activeNav === 'ai'">
+      <AiChat />
+      </template>
     </main>
   </div>
 </template>
@@ -150,6 +158,7 @@ import { getReportUsers } from '@/api/auth'
 import { useUserStore } from '@/stores/user'
 import { toast } from '@/composables/toast'
 import TextQueueExport from '@/components/TextQueueExport.vue'
+import AiChat from '@/components/AiChat.vue'
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -159,6 +168,10 @@ const activeNav = ref('home')
 
 function goQueue() {
   activeNav.value = 'queue'
+}
+
+function goAi() {
+  activeNav.value = 'ai'
 }
 
 function goHome() {
