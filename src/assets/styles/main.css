@@ -710,7 +710,6 @@ tbody tr:hover { background: rgba(42, 54, 87, 0.5); }
   .ai-side { width: 100%; max-height: 160px; }
   .ai-main { min-height: 460px; }
 }
-}
 
 /* 分页 */
 .pagination {
