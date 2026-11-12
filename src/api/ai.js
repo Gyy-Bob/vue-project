@@ -59,13 +59,14 @@ export async function chatStream({ message, conversationNo, token, onEvent, sign
     const { done, value } = await reader.read()
     if (done) break
     buf += decoder.decode(value, { stream: true })
+    buf = buf.replace(/\r\n/g, '\n') // 兼容 CRLF 换行的服务端实现
 
     let idx
     while ((idx = buf.indexOf('\n\n')) >= 0) {
       const frame = buf.slice(0, idx)
       buf = buf.slice(idx + 2)
 
-      let event = 'message'
+      let event = ''
       const dataLines = []
       for (const line of frame.split('\n')) {
         if (line.startsWith(':')) continue // 心跳注释帧（:ping），忽略
@@ -80,6 +81,16 @@ export async function chatStream({ message, conversationNo, token, onEvent, sign
       } catch {
         continue // 单个坏帧不影响整体流
       }
+
+      // 后端部分错误（如 40002）不带 event 行，只有一个裸 data 帧。
+      // 这类帧统一归一化成 error 事件，交给上层按错误处理。
+      if (!event || event === 'message') {
+        if (data && data.code !== undefined && data.code !== 0) {
+          onEvent('error', { code: data.code, message: data.message })
+        }
+        continue
+      }
+
       onEvent(event, data)
     }
   }

@@ -556,6 +556,20 @@ tbody tr:hover { background: rgba(42, 54, 87, 0.5); }
   text-overflow: ellipsis;
 }
 .ai-conv-meta { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+.ai-more-btn {
+  width: 100%;
+  margin-top: 6px;
+  padding: 6px 0;
+  background: transparent;
+  border: 1px dashed rgba(56, 68, 107, 0.8);
+  border-radius: 6px;
+  color: var(--text-muted);
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.ai-more-btn:hover:not(:disabled) { color: var(--gold); border-color: var(--gold); }
+.ai-more-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
 /* 中间对话区 */
 .ai-main {
