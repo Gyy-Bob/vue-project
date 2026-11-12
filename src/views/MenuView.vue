@@ -12,7 +12,7 @@
         <span class="nav-icon">✎</span> 文字导出
       </div>
       <div class="nav-item" :class="{ active: activeNav === 'ai' }" @click="goAi">
-        <span class="nav-icon">✦</span> AI 开户助手
+        <span class="nav-icon">✦</span> AI 对话
       </div>
       <div class="spacer"></div>
       <div class="user-chip">
@@ -143,7 +143,7 @@
       <TextQueueExport ref="queueFeatureRef" />
       </template>
 
-      <!-- ===== AI 开户助手页面 ===== -->
+      <!-- ===== AI 对话页面（纯对话，无引导填单） ===== -->
       <template v-if="activeNav === 'ai'">
       <AiChat />
       </template>

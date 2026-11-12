@@ -1,45 +1,36 @@
 import request from './request'
 
-/** ① 智能体信息 + 表单 schema（进页面调用一次） */
-export const getAgent = (agentCode) => request.get(`/ai/agents/${encodeURIComponent(agentCode)}`)
+/**
+ * AI 对话接口（精简版，只有对话能力）
+ * 文档：docs/backend/07-AI对话接口文档.md
+ */
 
-/** ④ 单独获取表单 schema（可选） */
-export const getForm = (formKey) => request.get(`/ai/forms/${encodeURIComponent(formKey)}`)
-
-/** ③ 提交表单（clientToken 幂等） */
-export const submitForm = (formKey, payload) =>
-  request.post(`/ai/forms/${encodeURIComponent(formKey)}/submit`, payload)
-
-/** ⑤ 历史会话列表 */
+/** ① 我的会话列表（分页） */
 export const getConversations = (params = { pageNum: 1, pageSize: 20 }) =>
   request.get('/ai/conversations', { params })
 
-/** ⑥ 会话消息明细 */
-export const getMessages = (conversationNo) =>
-  request.get(`/ai/conversations/${encodeURIComponent(conversationNo)}/messages`)
+/** ② 某个会话的消息明细 */
+export const getMessages = (convNo) =>
+  request.get(`/ai/conversations/${encodeURIComponent(convNo)}/messages`)
 
 /**
- * ② 流式对话（SSE）
+ * ③ 流式对话（SSE）
  * 不能用 EventSource：它只支持 GET 且无法携带 Authorization 头。
  * 这里用 fetch + ReadableStream 手动解析 text/event-stream。
  *
+ * 事件顺序：meta → delta… → done，异常以 error 结束。
+ *
  * @param {object} opts
- * @param {string|null} opts.conversationNo 首轮 null
- * @param {string} opts.message
- * @param {{formKey:string, values:object}|null} opts.formContext 表单当前值，强烈建议每次传
+ * @param {string} opts.message 必填，最长由后端 ai.chat.max-input-chars 控制（默认 4000）
+ * @param {string|null} [opts.conversationNo] 首轮不传（新建会话），续聊传 meta 返回的会话号
  * @param {string} opts.token JWT
  * @param {(event:string, data:object)=>void} opts.onEvent
- * @param {AbortSignal} [opts.signal] 用于中断生成
+ * @param {AbortSignal} [opts.signal] 中断生成（后端会同步停止消费上游）
  */
-export async function chatStream({
-  conversationNo,
-  message,
-  formContext,
-  token,
-  onEvent,
-  signal,
-  agentCode = 'user-onboarding',
-}) {
+export async function chatStream({ message, conversationNo, token, onEvent, signal }) {
+  const body = { message }
+  if (conversationNo) body.conversationNo = conversationNo
+
   const resp = await fetch('/api/v1/ai/chat/stream', {
     method: 'POST',
     headers: {
@@ -47,16 +38,11 @@ export async function chatStream({
       Accept: 'text/event-stream',
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify({
-      conversationNo: conversationNo || null,
-      agentCode,
-      message,
-      formContext: formContext || null,
-    }),
+    body: JSON.stringify(body),
     signal,
   })
 
-  // 网关 40100 等异常会以普通 JSON 返回（HTTP 200）
+  // 网关 40100 / 40002 等异常会以普通 JSON 返回
   const contentType = resp.headers.get('content-type') || ''
   if (!contentType.includes('text/event-stream')) {
     const json = await resp.json().catch(() => ({}))
@@ -80,18 +66,21 @@ export async function chatStream({
       buf = buf.slice(idx + 2)
 
       let event = 'message'
-      let data = ''
+      const dataLines = []
       for (const line of frame.split('\n')) {
-        if (line.startsWith(':')) continue // 心跳注释帧（:ping）
+        if (line.startsWith(':')) continue // 心跳注释帧（:ping），忽略
         if (line.startsWith('event:')) event = line.slice(6).trim()
-        else if (line.startsWith('data:')) data += line.slice(5).trim()
+        else if (line.startsWith('data:')) dataLines.push(line.slice(5).trim())
       }
-      if (!data) continue
+      if (!dataLines.length) continue
+
+      let data
       try {
-        onEvent(event, JSON.parse(data))
+        data = JSON.parse(dataLines.join('\n'))
       } catch {
-        // 单个坏帧不影响整体流
+        continue // 单个坏帧不影响整体流
       }
+      onEvent(event, data)
     }
   }
 }
