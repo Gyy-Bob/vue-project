@@ -40,7 +40,7 @@
         <button v-if="streaming" class="ai-stop" @click="stopStreaming">■ 停止生成</button>
       </header>
 
-      <div ref="msgBoxRef" class="ai-messages">
+      <div ref="msgBoxRef" class="ai-messages" @scroll="onMessagesScroll">
         <div v-if="!messages.length" class="ai-empty">发送一条消息开始对话</div>
 
         <div v-for="(m, i) in messages" :key="i" class="ai-msg" :class="m.role">
@@ -56,6 +56,11 @@
           </div>
         </div>
       </div>
+
+      <!-- 往上翻看历史时出现，点击回到底部并恢复自动跟随 -->
+      <button v-if="!stickBottom && messages.length" class="ai-to-bottom" @click="scrollBottom(true)">
+        ↓ 回到底部
+      </button>
 
       <div class="ai-input">
         <textarea
@@ -96,6 +101,8 @@ const convHasMore = ref(false)
 const convLoading = ref(false)
 const CONV_PAGE_SIZE = 20
 const msgBoxRef = ref(null)
+// 是否贴底跟随新内容；用户往上翻看历史时置 false，避免被强行拉回底部
+const stickBottom = ref(true)
 let controller = null
 
 // 错误码 → 前端友好提示（后端 message 过于技术化时兜底）
@@ -122,7 +129,15 @@ function fmtTime(t) {
   return sameDay ? `${p(d.getHours())}:${p(d.getMinutes())}` : `${p(d.getMonth() + 1)}-${p(d.getDate())}`
 }
 
-function scrollBottom() {
+function onMessagesScroll() {
+  const el = msgBoxRef.value
+  if (!el) return
+  stickBottom.value = el.scrollHeight - el.scrollTop - el.clientHeight < 60
+}
+
+function scrollBottom(force = false) {
+  if (force) stickBottom.value = true
+  if (!stickBottom.value) return
   nextTick(() => {
     const el = msgBoxRef.value
     if (el) el.scrollTop = el.scrollHeight
@@ -169,7 +184,7 @@ async function send(text, { retry = false, retried = false } = {}) {
   messages.value.push(bubble)
   draft.value = ''
   streaming.value = true
-  scrollBottom()
+  scrollBottom(true)
 
   // ctx.needRetry：流内收到 50603 时，等连接结束后按新会话重发一次（只重试一次，避免死循环）
   const ctx = { retried, needRetry: false }
@@ -271,7 +286,7 @@ async function openConversation(c) {
     let list = await getMessages(c.conversationNo)
     if (!Array.isArray(list)) list = list?.list || []
     messages.value = list.map((m) => ({ role: m.role, content: m.content, error: false }))
-    scrollBottom()
+    scrollBottom(true)
   } catch (err) {
     if (err?.code === 50603) {
       toast.info('该会话已失效')

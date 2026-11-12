@@ -508,6 +508,19 @@ tbody tr:hover { background: rgba(42, 54, 87, 0.5); }
   min-height: 520px;
 }
 
+/* AI 页面：让对话区精确占满主区域剩余高度（不再用 100vh 估算，避免留白/超出） */
+.menu-main.is-ai {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.menu-main.is-ai > .ai-chat {
+  flex: 1 1 auto;
+  height: auto;
+  min-height: 0;
+}
+.menu-main.is-ai > .ai-chat > .ai-side { min-height: 0; }
+
 /* 左侧会话记录 */
 .ai-side {
   width: 190px;
@@ -575,6 +588,8 @@ tbody tr:hover { background: rgba(42, 54, 87, 0.5); }
 .ai-main {
   flex: 1;
   min-width: 0;
+  min-height: 0; /* 关键：允许在 flex 布局中被压缩，否则消息区无法内部滚动 */
+  position: relative; /* 「回到底部」浮层定位基准 */
   display: flex;
   flex-direction: column;
   background: var(--card-bg);
@@ -623,7 +638,45 @@ tbody tr:hover { background: rgba(42, 54, 87, 0.5); }
 }
 .ai-stop:hover { color: var(--danger); border-color: var(--danger); }
 
-.ai-messages { flex: 1; overflow-y: auto; padding: 18px; display: flex; flex-direction: column; gap: 14px; }
+.ai-messages {
+  flex: 1 1 0;
+  min-height: 0; /* 关键：内容超高时内部滚动，而不是把输入框顶出可视区 */
+  overflow-y: auto;
+  overscroll-behavior: contain; /* 滚到底不带动整页滚动 */
+  scroll-behavior: smooth;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(217, 168, 96, 0.45) transparent;
+}
+.ai-messages::-webkit-scrollbar { width: 8px; }
+.ai-messages::-webkit-scrollbar-track { background: transparent; }
+.ai-messages::-webkit-scrollbar-thumb {
+  background: rgba(217, 168, 96, 0.35);
+  border-radius: 4px;
+}
+.ai-messages::-webkit-scrollbar-thumb:hover { background: rgba(217, 168, 96, 0.6); }
+
+/* 往上翻历史时出现的「回到底部」浮层 */
+.ai-to-bottom {
+  position: absolute;
+  left: 50%;
+  bottom: 104px;
+  transform: translateX(-50%);
+  z-index: 3;
+  padding: 5px 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(217, 168, 96, 0.5);
+  background: rgba(16, 24, 46, 0.92);
+  color: var(--gold);
+  font-size: 12px;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+  transition: background 0.2s;
+}
+.ai-to-bottom:hover { background: rgba(217, 168, 96, 0.18); }
 .ai-msg { display: flex; }
 .ai-msg.user { justify-content: flex-end; }
 .ai-bubble {
@@ -709,6 +762,9 @@ tbody tr:hover { background: rgba(42, 54, 87, 0.5); }
   .ai-chat { flex-direction: column; height: auto; }
   .ai-side { width: 100%; max-height: 160px; }
   .ai-main { min-height: 460px; }
+  /* 窄屏改为整页滚动，避免聊天区被压得过小 */
+  .menu-main.is-ai { overflow-y: auto; }
+  .menu-main.is-ai > .ai-chat { flex: none; height: auto; }
 }
 
 /* 分页 */

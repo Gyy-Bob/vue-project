@@ -25,7 +25,7 @@
     </aside>
 
     <!-- 右侧主内容 -->
-    <main class="menu-main">
+    <main class="menu-main" :class="{ 'is-ai': activeNav === 'ai' }">
       <div class="menu-topbar">
         <h2>工作台</h2>
         <button class="btn-logout" @click="handleLogout">退出登录</button>
